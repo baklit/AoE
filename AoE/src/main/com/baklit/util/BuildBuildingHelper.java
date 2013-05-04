@@ -14,7 +14,7 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
-public class BuildBuilding extends BukkitRunnable{
+public class BuildBuildingHelper extends BukkitRunnable{
 	
 	int i = 0;
 	int o = 0;
@@ -30,7 +30,7 @@ public class BuildBuilding extends BukkitRunnable{
 		clipBoard = clipBoardIn;
 		blockVector = blockVectorIn;
 		
-		this.runTaskTimer(AoE.instance, 0, 5);
+		this.runTaskTimer(AoE.instance, 0, 1);
 		
 	}
 	
@@ -38,6 +38,11 @@ public class BuildBuilding extends BukkitRunnable{
 	public void run() {
 		
 		World world = player.getWorld();
+		Location blockLocation = new Location(world, blockVector.getBlockX()+o,blockVector.getBlockY()+1+i,blockVector.getBlockZ()+p);
+		BaseBlock testBlock = clipBoard.getPoint(new Vector(o,i,p));
+		world.getBlockAt(blockLocation).setTypeIdAndData(testBlock.getId(),(byte) testBlock.getData(), false);
+		
+		p++;
 		
 		if(p == clipBoard.getLength()){
 			p = 0;
@@ -48,26 +53,13 @@ public class BuildBuilding extends BukkitRunnable{
 			i++;
 		}
 		if(i == clipBoard.getHeight()){
-			i = 0;
-			
-			new BukkitRunnable(){
-
-				public void run() {
-					BuildingBuiltEvent builtEvent = new BuildingBuiltEvent();
-					Bukkit.getPluginManager().callEvent(builtEvent);
 					
-				}
+			BuildingBuiltEvent builtEvent = new BuildingBuiltEvent(new Location(world,0,0,0), new Location(world,o,i,p), player);
+			Bukkit.getPluginManager().callEvent(builtEvent);
+					
 				
-			}.runTask(AoE.instance);
 			this.cancel();
 		}
-		
-		Location blockLocation = new Location(world, blockVector.getBlockX()+o,blockVector.getBlockY()+1+i,blockVector.getBlockZ()+p);
-		BaseBlock testBlock = clipBoard.getPoint(new Vector(o,i,p));
-		world.getBlockAt(blockLocation).setTypeIdAndData(testBlock.getId(),(byte) testBlock.getData(), false);
-		System.out.println("place block at " + o + " " + i+ " " + p);
-		
-		p++;
 
 	}
 

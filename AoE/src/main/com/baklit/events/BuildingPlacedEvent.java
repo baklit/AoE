@@ -3,7 +3,7 @@ package main.com.baklit.events;
 import java.util.HashMap;
 
 
-import main.com.baklit.util.BuildBuilding;
+import main.com.baklit.util.BuildBuildingHelper;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -21,7 +21,7 @@ public class BuildingPlacedEvent extends Event{
 	private static final HandlerList handlers = new HandlerList();
 	
 	public BuildingPlacedEvent(final Player playerIn, final CuboidClipboard clipBoardIn, final WorldVector blockVectorIn){
-		BuildBuilding build = new BuildBuilding();
+		BuildBuildingHelper build = new BuildBuildingHelper();
 		build.buildBuilding(playerIn, clipBoardIn, blockVectorIn);
 	}
 		

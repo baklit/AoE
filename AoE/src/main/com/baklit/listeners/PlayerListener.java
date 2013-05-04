@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
-import main.com.baklit.AoE;
-import main.com.baklit.events.BuildingBuiltEvent;
 import main.com.baklit.events.BuildingPlacedEvent;
 
 import org.bukkit.Bukkit;
@@ -19,13 +17,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.LocalPlayer;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
-import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.data.DataException;
 import com.sk89q.worldedit.schematic.SchematicFormat;
