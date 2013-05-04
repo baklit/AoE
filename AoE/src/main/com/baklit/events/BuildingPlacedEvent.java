@@ -18,15 +18,16 @@ import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
 public class BuildingPlacedEvent extends Event{
+	
+	final HashMap<Integer, Integer> runi = new HashMap<Integer, Integer>();
+	final HashMap<Integer, Integer> runo = new HashMap<Integer, Integer>();
+	final HashMap<Integer, Integer> runp = new HashMap<Integer, Integer>();
 
 	private static final HandlerList handlers = new HandlerList();
 	
 	public BuildingPlacedEvent(final Player playerIn, final CuboidClipboard clipBoardIn, final WorldVector blockVectorIn){
 		
 		final World worldIn = playerIn.getWorld();
-		final HashMap<Integer, Integer> runi = new HashMap<Integer, Integer>();
-		final HashMap<Integer, Integer> runo = new HashMap<Integer, Integer>();
-		final HashMap<Integer, Integer> runp = new HashMap<Integer, Integer>();
 		
 		new BukkitRunnable(){
 			
