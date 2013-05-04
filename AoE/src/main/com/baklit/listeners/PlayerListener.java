@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import main.com.baklit.AoE;
 import main.com.baklit.events.BuildingBuiltEvent;
+import main.com.baklit.events.BuildingPlacedEvent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -42,7 +44,6 @@ public class PlayerListener implements Listener{
 	
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event) throws IOException, DataException{
-		String test[] = test.l
 		if(Bukkit.getServer().getPlayer(event.getPlayer().getDisplayName()) != null){
 			if(event.getPlayer().getItemInHand().getType() == Material.STICK){
 				if(OverFlowStop.get(event.getPlayer()) == null){
@@ -113,54 +114,22 @@ public class PlayerListener implements Listener{
 	public void onPlayerInteract(PlayerInteractEvent event){
 		if(event.getPlayer().getItemInHand().getType() == Material.STICK){
 		Bukkit.getServer().broadcastMessage("" + event.getAction().name());
+		
 		try {
 			playersClipboard.put(event.getPlayer(), SchematicFormat.MCEDIT.load(new File("plugins/AoE/Schematics/BasicHouse.schematic")));
 		} catch (IOException | DataException e) {
 			event.getPlayer().sendMessage(ChatColor.DARK_RED + "[AoE] Sorry but an error occured trying to load that building, please try that action again.");
 		}
+	
+		
 		LocalPlayer localPlayer = new WorldEditPlugin().wrapPlayer(event.getPlayer());
-		testPlayer = event.getPlayer();
 		blockVector = localPlayer.getSolidBlockTrace(200);
-		house = playersClipboard.get(event.getPlayer());
-		Bukkit.getServer().getScheduler().runTaskAsynchronously(AoE.instance, new BukkitRunnable(){
-			
-			public void run() {
-				
-				Player testPlayer = PlayerListener.testPlayer;
-				CuboidClipboard house = PlayerListener.playersClipboard.get(testPlayer);
-				WorldVector blockVector = PlayerListener.blockVector;
-				
-				for (int i=0;i<house.getHeight();i++){
-					for (int o=0;o<house.getWidth();o++){
-						for(int p=0;p<house.getLength();p++){
-							try {
-								Thread.currentThread();
-								Thread.sleep(250);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-							Location blockLocation = new Location(testPlayer.getWorld(), blockVector.getBlockX()+o,blockVector.getBlockY()+1+i,blockVector.getBlockZ()+p);
-							BaseBlock testBlock = house.getPoint(new Vector(o,i,p));
-							testPlayer.getWorld().getBlockAt(blockLocation).setTypeIdAndData(testBlock.getId(),(byte) testBlock.getData(), false);
-						}
-					}
-				}
-				Bukkit.getScheduler().runTask(AoE.instance, new BukkitRunnable(){
-
-					@Override
-					public void run() {
-						BuildingBuiltEvent builtEvent = new BuildingBuiltEvent();
-						Bukkit.getPluginManager().callEvent(builtEvent);
-						
-					}
-					
-				});
-
-
-			}
-		});
+		CuboidClipboard clipBoard = playersClipboard.get(event.getPlayer());
+		
+		Event BuildingPlacedEvent = new BuildingPlacedEvent(event.getPlayer(), clipBoard, blockVector);
+		Bukkit.getPluginManager().callEvent(BuildingPlacedEvent);
+		
+		}
 
 	}
-	}
-
 }
