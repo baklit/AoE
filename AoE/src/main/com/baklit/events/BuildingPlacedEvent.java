@@ -23,7 +23,7 @@ public class BuildingPlacedEvent extends Event{
 		
 		final World worldIn = playerIn.getWorld();
 		
-		Bukkit.getServer().getScheduler().runTaskAsynchronously(AoE.instance, new BukkitRunnable(){
+		new BukkitRunnable(){
 			
 			public void run() {
 				
@@ -47,7 +47,7 @@ public class BuildingPlacedEvent extends Event{
 						}
 					}
 				}
-				Bukkit.getScheduler().runTask(AoE.instance, new BukkitRunnable(){
+				new BukkitRunnable(){
 
 					@Override
 					public void run() {
@@ -56,11 +56,11 @@ public class BuildingPlacedEvent extends Event{
 						
 					}
 					
-				});
+				}.runTaskAsynchronously(AoE.instance);
 
 
 			}
-		});
+		}.runTaskAsynchronously(AoE.instance);
 
 	}
 	
