@@ -1,0 +1,10 @@
+name: AoE
+main: main.com.baklit.AoE
+version: 1.0
+description: Age of Empires for minecraft!
+commands:
+   aoe:
+      description: Age of Empires command base.
+      usage: Improper usage /<command> [arg1] [arg2] etc
+      permission: <plugin name>.aoe
+      permission-message: You don't have <permission>
