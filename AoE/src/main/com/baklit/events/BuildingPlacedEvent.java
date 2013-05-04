@@ -1,5 +1,7 @@
 package main.com.baklit.events;
 
+import java.util.HashMap;
+
 import main.com.baklit.AoE;
 
 import org.bukkit.Bukkit;
@@ -22,45 +24,74 @@ public class BuildingPlacedEvent extends Event{
 	public BuildingPlacedEvent(final Player playerIn, final CuboidClipboard clipBoardIn, final WorldVector blockVectorIn){
 		
 		final World worldIn = playerIn.getWorld();
+		final HashMap<Integer, Integer> runi = new HashMap<Integer, Integer>();
+		final HashMap<Integer, Integer> runo = new HashMap<Integer, Integer>();
+		final HashMap<Integer, Integer> runp = new HashMap<Integer, Integer>();
 		
 		new BukkitRunnable(){
 			
+			
 			public void run() {
+				
+				if(runi.get(this.getTaskId()) == null){
+					System.out.println("setting i");
+					runi.put(this.getTaskId(), 0);
+				}
+				
+				if(runo.get(this.getTaskId()) == null){
+					runo.put(this.getTaskId(), 0);
+				}
+				
+				if(runp.get(this.getTaskId()) == null){
+					runp.put(this.getTaskId(), 0);
+				}
+				
+				int i = runi.get(this.getTaskId());
+				int o = runo.get(this.getTaskId());
+				int p = runp.get(this.getTaskId());
 				
 				Player player = playerIn;
 				World world = worldIn;
 				CuboidClipboard clipBoard = clipBoardIn;
 				WorldVector blockVector = blockVectorIn;
 				
-				for (int i=0;i<clipBoard.getHeight();i++){
-					for (int o=0;o<clipBoard.getWidth();o++){
-						for(int p=0;p<clipBoard.getLength();p++){
-							try {
-								Thread.currentThread();
-								Thread.sleep(250);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-							Location blockLocation = new Location(world, blockVector.getBlockX()+o,blockVector.getBlockY()+1+i,blockVector.getBlockZ()+p);
-							BaseBlock testBlock = clipBoard.getPoint(new Vector(o,i,p));
-							world.getBlockAt(blockLocation).setTypeIdAndData(testBlock.getId(),(byte) testBlock.getData(), false);
-						}
-					}
+				if(p == clipBoard.getLength()){
+					p = 0;
+					o++;
 				}
-				new BukkitRunnable(){
-
-					@Override
-					public void run() {
-						BuildingBuiltEvent builtEvent = new BuildingBuiltEvent();
-						Bukkit.getPluginManager().callEvent(builtEvent);
-						
-					}
+				if(o == clipBoard.getWidth()){
+					o = 0;
+					i++;
+				}
+				if(i == clipBoard.getHeight()){
+					i = 0;
 					
-				}.runTaskAsynchronously(AoE.instance);
+					new BukkitRunnable(){
 
+						@Override
+						public void run() {
+							BuildingBuiltEvent builtEvent = new BuildingBuiltEvent();
+							Bukkit.getPluginManager().callEvent(builtEvent);
+							
+						}
+						
+					}.runTask(AoE.instance);
+					this.cancel();
+				}
+				
+				Location blockLocation = new Location(world, blockVector.getBlockX()+o,blockVector.getBlockY()+1+i,blockVector.getBlockZ()+p);
+				BaseBlock testBlock = clipBoard.getPoint(new Vector(o,i,p));
+				world.getBlockAt(blockLocation).setTypeIdAndData(testBlock.getId(),(byte) testBlock.getData(), false);
+				System.out.println("place block at " + o + " " + i+ " " + p);
+				
+				p++;
+				
+				runi.put(this.getTaskId(), i);
+				runo.put(this.getTaskId(), o);
+				runp.put(this.getTaskId(), p);
 
 			}
-		}.runTaskAsynchronously(AoE.instance);
+		}.runTaskTimer(AoE.instance, 0, 5);
 
 	}
 	
