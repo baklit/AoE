@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import main.com.baklit.events.BuildingPlacedEvent;
+import main.com.baklit.types.Building;
+import main.com.baklit.util.BuildingHelper;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -124,6 +126,19 @@ public class PlayerListener implements Listener{
 		Event BuildingPlacedEvent = new BuildingPlacedEvent(event.getPlayer(), clipBoard, blockVector);
 		Bukkit.getPluginManager().callEvent(BuildingPlacedEvent);
 		
+		}
+		if(event.getPlayer().getItemInHand().getType() == Material.BLAZE_ROD){
+			LocalPlayer localPlayer = new WorldEditPlugin().wrapPlayer(event.getPlayer());
+			blockVector = localPlayer.getSolidBlockTrace(200);
+			Block block = event.getPlayer().getWorld().getBlockAt(blockVector.getBlockX(), blockVector.getBlockY(), blockVector.getBlockZ());
+			Building building = BuildingHelper.getBuildingFromBlock(block);
+			if(building == null){
+				event.getPlayer().sendMessage("That is not a building try again");
+			}
+			else{
+				event.getPlayer().sendMessage("This is building " + building.getId() + " owned by " + building.getOwner().getDisplayName());
+				event.getPlayer().sendMessage("You are " + building.getDistanceFromLocation(event.getPlayer().getLocation()) + " blocks away");
+			}
 		}
 
 	}

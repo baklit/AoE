@@ -10,9 +10,11 @@ import java.util.HashMap;
 
 import main.com.baklit.listeners.BlockListener;
 import main.com.baklit.listeners.PlayerListener;
+import main.com.baklit.types.Building;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -22,6 +24,7 @@ public class AoE extends JavaPlugin{
 	public final BlockListener blocklistener  = new BlockListener();
 	public final PlayerListener playerlistener  = new PlayerListener();
 	public HashMap<Integer, String> SchematicsList = new HashMap<Integer, String>();
+	public static HashMap<Building, Player> buildings = new HashMap<Building, Player>();
 	public File Schematics = new File("plugins/AoE/Schematics");
 	
 	@Override
@@ -43,8 +46,6 @@ public class AoE extends JavaPlugin{
 	
 	void loadSchematics(){
 		SchematicsList.put(SchematicsList.size(),"BasicHouse");
-		SchematicsList.put(SchematicsList.size(),"BasicHousValid");
-		SchematicsList.put(SchematicsList.size(),"BasicHouseInvalid");
 		for (int o=0;o<SchematicsList.size();o++){
 		InputStream input = getClass().getResourceAsStream("/resources/Schematics/" + SchematicsList.get(o) + ".schematic");
 		if (input == null){	

@@ -53,8 +53,11 @@ public class BuildBuildingHelper extends BukkitRunnable{
 			i++;
 		}
 		if(i == clipBoard.getHeight()){
-					
-			BuildingBuiltEvent builtEvent = new BuildingBuiltEvent(new Location(world,0,0,0), new Location(world,o,i,p), player);
+			
+			
+			Location minLoc = new Location(world, blockVector.getBlockX()-1,blockVector.getBlockY()+1,blockVector.getBlockZ()-1);
+			Location maxLoc = new Location(world, blockVector.getBlockX()-1+clipBoard.getWidth(),blockVector.getBlockY()+clipBoard.getHeight(),blockVector.getBlockZ()-1 + clipBoard.getLength());
+			BuildingBuiltEvent builtEvent = new BuildingBuiltEvent(minLoc, maxLoc, player);
 			Bukkit.getPluginManager().callEvent(builtEvent);
 					
 				
