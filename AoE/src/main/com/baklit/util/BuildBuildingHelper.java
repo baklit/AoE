@@ -69,8 +69,25 @@ public class BuildBuildingHelper extends BukkitRunnable{
 				
 			this.cancel();
 		}
-		this.runTaskLater(AoE.instance, building.getBuildSpeed());
+		BuildBuildingHelper build = new BuildBuildingHelper();
+		build.continueBuild(player, clipBoard, blockVector, building, i, o, p);
 
+	}
+	
+	public void continueBuild(final Player playerIn, final CuboidClipboard clipBoardIn, final WorldVector blockVectorIn, final Building buildingIn, int iIn, int oIn, int pIn){
+		
+		player = playerIn;
+		clipBoard = clipBoardIn;
+		blockVector = blockVectorIn;
+		building = buildingIn;
+		buildSpeed = building.getBuildSpeed();
+		
+		i=iIn;
+		o=oIn;
+		p=pIn;
+		
+		this.runTaskLater(AoE.instance, building.getBuildSpeed());
+		
 	}
 	
 
