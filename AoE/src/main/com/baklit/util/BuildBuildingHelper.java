@@ -2,6 +2,7 @@ package main.com.baklit.util;
 
 import main.com.baklit.AoE;
 import main.com.baklit.events.BuildingBuiltEvent;
+import main.com.baklit.types.Building;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -23,14 +24,18 @@ public class BuildBuildingHelper extends BukkitRunnable{
 	Player player;
 	CuboidClipboard clipBoard;
 	WorldVector blockVector;
+	Building building;
+	int buildSpeed;
 
-	public void buildBuilding(final Player playerIn, final CuboidClipboard clipBoardIn, final WorldVector blockVectorIn){
+	public void buildBuilding(final Player playerIn, final CuboidClipboard clipBoardIn, final WorldVector blockVectorIn, final Building buildingIn){
 		
 		player = playerIn;
 		clipBoard = clipBoardIn;
 		blockVector = blockVectorIn;
+		building = buildingIn;
+		buildSpeed = building.getBuildSpeed();
 		
-		this.runTaskTimer(AoE.instance, 0, 1);
+		this.runTaskLater(AoE.instance, building.getBuildSpeed());
 		
 	}
 	
@@ -41,6 +46,7 @@ public class BuildBuildingHelper extends BukkitRunnable{
 		Location blockLocation = new Location(world, blockVector.getBlockX()+o,blockVector.getBlockY()+1+i,blockVector.getBlockZ()+p);
 		BaseBlock testBlock = clipBoard.getPoint(new Vector(o,i,p));
 		world.getBlockAt(blockLocation).setTypeIdAndData(testBlock.getId(),(byte) testBlock.getData(), false);
+		building.blockSet();
 		
 		p++;
 		
@@ -63,7 +69,9 @@ public class BuildBuildingHelper extends BukkitRunnable{
 				
 			this.cancel();
 		}
+		this.runTaskLater(AoE.instance, building.getBuildSpeed());
 
 	}
+	
 
 }

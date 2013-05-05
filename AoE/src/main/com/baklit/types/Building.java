@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import com.sk89q.worldedit.CuboidClipboard;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
 
 public class Building extends Object{
@@ -15,7 +16,16 @@ public class Building extends Object{
 	Location Bottom;
 	Location Top;
 	Player owner;
+	World world;
+	Vector size;
 	boolean contains;
+	int buildSpeed;
+	int totalBlocks;
+	int setBlocks;
+	int percentageBuilt;
+	int width;
+	int height;
+	int length;
 	int Id = AoE.buildings.size();
 	int X;
 	int Y;
@@ -32,21 +42,36 @@ public class Building extends Object{
 		Bottom = min;
 		Top = max;
 		owner = ownerIn;
+		world = Bottom.getWorld();
 		
+		width = Top.getBlockX() - Bottom.getBlockX();
+		height = Top.getBlockY() - Bottom.getBlockY();
+		length = Top.getBlockZ() - Bottom.getBlockZ();
+		
+		totalBlocks = width*height*length;
+		
+		size = new Vector(width, height, length);
 	}
 	
 	public Building(CuboidClipboard clipBoard, WorldVector blockVector, Player ownerIn){
+		
 		Location minLoc = new Location(ownerIn.getWorld(), blockVector.getBlockX()-1,blockVector.getBlockY()+1,blockVector.getBlockZ()-1);
-		Location maxLoc = new Location(ownerIn.getWorld(), blockVector.getBlockX()-1+clipBoard.getWidth(),blockVector.getBlockY()+clipBoard.getHeight(),blockVector.getBlockZ()-1 + clipBoard.getLength());
+		Location maxLoc = new Location(ownerIn.getWorld(), blockVector.getBlockX()-1+clipBoard.getWidth(),blockVector.getBlockY()+1+clipBoard.getHeight(),blockVector.getBlockZ()-1 + clipBoard.getLength());
+		
 		Bottom = minLoc;
 		Top = maxLoc;
 		owner = ownerIn;
-		System.out.println(blockVector.getBlockX()-1);
-		System.out.println(blockVector.getBlockY()+1);
-		System.out.println(blockVector.getBlockZ()-1);
-		System.out.println(blockVector.getBlockX()-1+clipBoard.getWidth());
-		System.out.println(blockVector.getBlockY()+clipBoard.getHeight());
-		System.out.println(blockVector.getBlockZ()-1 + clipBoard.getLength());
+		world = Bottom.getWorld();
+		
+		width = Top.getBlockX() - Bottom.getBlockX();
+		height = Top.getBlockY() - Bottom.getBlockY();
+		length = Top.getBlockZ() - Bottom.getBlockZ();
+		
+		ownerIn.sendMessage("width " + width + " height " + height + " length " + length);
+		
+		totalBlocks = width*height*length;
+		
+		size = new Vector(width, height, length);
 		}
 	
 	public Location getBottom(){
@@ -112,16 +137,11 @@ public class Building extends Object{
 	}
 	
 	public Block getClosesBlockFromLocation(Location location){
-		World world = Bottom.getWorld();
 		Block block = null;
-		double distance = 0;
-		int sizeX = Bottom.getBlockX() - Top.getBlockX();
-		int sizeY = Bottom.getBlockZ() - Top.getBlockZ();
-		int sizeZ = Bottom.getBlockY() - Top.getBlockY();
-		
-		for(int x = 0; x < sizeX; x++){
-			for(int y = 0; y < sizeY; y++){
-				for(int z = 0; z < sizeZ; z++ ){
+		double distance = 1000;
+		for(int x = 0; x < width; x++){
+			for(int y = 0; y < height; y++){
+				for(int z = 0; z < length; z++ ){
 					Location testLocation = new Location(world,Bottom.getBlockX()+x,Bottom.getBlockY()+y,Bottom.getBlockZ()+z);
 					if(location.distance(new Location(world, x,y,z)) < distance){
 						distance = location.distance(testLocation);
@@ -134,17 +154,11 @@ public class Building extends Object{
 	}
 	
 	public int getDistanceFromLocation(Location location){
-		World world = Bottom.getWorld();
 		double distance = 1000;
-		int sizeX = Top.getBlockX() - Bottom.getBlockX();
-		int sizeY = Top.getBlockZ() - Bottom.getBlockZ();
-		int sizeZ = Top.getBlockY() - Bottom.getBlockY();
-		
-		for(int x = 0; x < sizeX; x++){
-			for(int y = 0; y < sizeY; y++){
-				for(int z = 0; z < sizeZ; z++ ){
+		for(int x = 0; x < width; x++){
+			for(int y = 0; y < height; y++){
+				for(int z = 0; z < length; z++ ){
 					Location testLocation = new Location(world,Bottom.getBlockX()+x,Bottom.getBlockY()+y,Bottom.getBlockZ()+z);
-					System.out.println(location.distance(testLocation));
 					if(location.distance(testLocation) < distance){
 						distance = location.distance(testLocation);
 					}
@@ -152,6 +166,37 @@ public class Building extends Object{
 			}
 		}
 		return (int) Math.round(distance);
+	}
+	
+	public Vector getSize(){
+		return size;
+	}
+	
+	public int getWidth(){
+		return width;
+	}
+	
+	public int getHeight(){
+		return height;
+	}
+	
+	public int getLength(){
+		return length;
+	}
+	
+	public void blockSet(){
+		setBlocks++;
+		percentageBuilt = Math.round((setBlocks*100/totalBlocks*100)/100);
+		System.out.println(setBlocks + "  /  " + totalBlocks);
+		buildSpeed = percentageBuilt/10;
+	}
+	
+	public int getPercentageBuilt(){
+		return percentageBuilt;
+	}
+	
+	public int getBuildSpeed(){
+		return buildSpeed;
 	}
 
 }

@@ -136,6 +136,7 @@ public class PlayerListener implements Listener{
 				event.getPlayer().sendMessage("That is not a building try again");
 			}
 			else{
+				BuildingHelper.selectBuilding(building, event.getPlayer());
 				event.getPlayer().sendMessage("This is building " + building.getId() + " owned by " + building.getOwner().getDisplayName());
 				event.getPlayer().sendMessage("You are " + building.getDistanceFromLocation(event.getPlayer().getLocation()) + " blocks away");
 			}

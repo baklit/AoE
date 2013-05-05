@@ -24,9 +24,9 @@ public class BuildingPlacedEvent extends Event{
 	private static final HandlerList handlers = new HandlerList();
 	
 	public BuildingPlacedEvent(final Player playerIn, final CuboidClipboard clipBoardIn, final WorldVector blockVectorIn){
-		BuildBuildingHelper build = new BuildBuildingHelper();
-		build.buildBuilding(playerIn, clipBoardIn, blockVectorIn);
 		Building building = new Building(clipBoardIn,blockVectorIn, playerIn);
+		BuildBuildingHelper build = new BuildBuildingHelper();
+		build.buildBuilding(playerIn, clipBoardIn, blockVectorIn, building);
 		AoE.buildings.put(building, playerIn);
 		Bukkit.getServer().broadcastMessage("Building : " + building.getId() + " was built and is owned by " + building.getOwner().getDisplayName());
 	}
