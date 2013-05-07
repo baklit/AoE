@@ -6,6 +6,7 @@ import main.com.baklit.types.Building;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -15,80 +16,116 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldVector;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
-public class BuildBuildingHelper extends BukkitRunnable{
-	
-	int i = 0;
-	int o = 0;
-	int p = 0;
-	
-	Player player;
-	CuboidClipboard clipBoard;
-	WorldVector blockVector;
-	Building building;
-	int buildSpeed;
+public class BuildBuildingHelper extends BukkitRunnable {
 
-	public void buildBuilding(final Player playerIn, final CuboidClipboard clipBoardIn, final WorldVector blockVectorIn, final Building buildingIn){
-		
+	private int height = 0;
+	private int width = 0;
+	private int length = 0;
+
+	private int delaysTillBlockPlace;
+
+	private Player player;
+	private CuboidClipboard clipBoard;
+	private WorldVector blockVector;
+	private Building building;
+
+	public void buildBuilding(final Player playerIn,
+			final CuboidClipboard clipBoardIn, final WorldVector blockVectorIn,
+			final Building buildingIn) {
+
 		player = playerIn;
 		clipBoard = clipBoardIn;
 		blockVector = blockVectorIn;
 		building = buildingIn;
-		buildSpeed = building.getBuildSpeed();
-		
-		this.runTaskLater(AoE.instance, building.getBuildSpeed());
-		
+		delaysTillBlockPlace = building.getBuildSpeed();
+
+		this.runTaskTimer(AoE.instance, 0, building.getBuildSpeed());
+
 	}
-	
 
 	public void run() {
-		
-		World world = player.getWorld();
-		Location blockLocation = new Location(world, blockVector.getBlockX()+o,blockVector.getBlockY()+1+i,blockVector.getBlockZ()+p);
-		BaseBlock testBlock = clipBoard.getPoint(new Vector(o,i,p));
-		world.getBlockAt(blockLocation).setTypeIdAndData(testBlock.getId(),(byte) testBlock.getData(), false);
-		building.blockSet();
-		
-		p++;
-		
-		if(p == clipBoard.getLength()){
-			p = 0;
-			o++;
+
+		World world;
+		Location blockLocation;
+		BaseBlock testBlock;
+
+		// if(delaysTillBlockPlace <= building.getBuildSpeed()) {
+		if (delaysTillBlockPlace <= 1) {
+			delaysTillBlockPlace++;
+		} else {
+			delaysTillBlockPlace = 0;
+			world = player.getWorld();
+			blockLocation = new Location(world,
+					blockVector.getBlockX() + width, blockVector.getBlockY()
+							+ 1 + height, blockVector.getBlockZ() + length);
+			testBlock = clipBoard.getPoint(new Vector(width, height, length));
+			while (testBlock.getId() == Material.AIR.getId()) {
+				world.getBlockAt(blockLocation).setTypeIdAndData(
+						testBlock.getId(), (byte) testBlock.getData(), false);
+				building.blockSet();
+				length++;
+				if (length == clipBoard.getLength()) {
+					length = 0;
+					width++;
+				}
+				if (width == clipBoard.getWidth()) {
+					width = 0;
+					height++;
+				}
+				if (height == clipBoard.getHeight()) {
+
+					Location minLoc = new Location(world,
+							blockVector.getBlockX() - 1,
+							blockVector.getBlockY() + 1,
+							blockVector.getBlockZ() - 1);
+					Location maxLoc = new Location(world,
+							blockVector.getBlockX() - 1 + clipBoard.getWidth(),
+							blockVector.getBlockY() + clipBoard.getHeight(),
+							blockVector.getBlockZ() - 1 + clipBoard.getLength());
+					BuildingBuiltEvent builtEvent = new BuildingBuiltEvent(
+							minLoc, maxLoc, player);
+					Bukkit.getPluginManager().callEvent(builtEvent);
+
+					this.cancel();
+					return;
+				}
+				blockLocation = new Location(world, blockVector.getBlockX()
+						+ width, blockVector.getBlockY() + 1 + height,
+						blockVector.getBlockZ() + length);
+				testBlock = clipBoard
+						.getPoint(new Vector(width, height, length));
+			}
+			world.getBlockAt(blockLocation).setTypeIdAndData(testBlock.getId(),
+					(byte) testBlock.getData(), false);
+			building.blockSet();
+
+			length++;
+			if (length == clipBoard.getLength()) {
+				length = 0;
+				width++;
+			}
+			if (width == clipBoard.getWidth()) {
+				width = 0;
+				height++;
+			}
+			if (height == clipBoard.getHeight()) {
+
+				Location minLoc = new Location(world,
+						blockVector.getBlockX() - 1,
+						blockVector.getBlockY() + 1,
+						blockVector.getBlockZ() - 1);
+				Location maxLoc = new Location(world, blockVector.getBlockX()
+						- 1 + clipBoard.getWidth(), blockVector.getBlockY()
+						+ clipBoard.getHeight(), blockVector.getBlockZ() - 1
+						+ clipBoard.getLength());
+				BuildingBuiltEvent builtEvent = new BuildingBuiltEvent(minLoc,
+						maxLoc, player);
+				Bukkit.getPluginManager().callEvent(builtEvent);
+
+				this.cancel();
+			}
 		}
-		if(o == clipBoard.getWidth()){
-			o = 0;
-			i++;
-		}
-		if(i == clipBoard.getHeight()){
-			
-			
-			Location minLoc = new Location(world, blockVector.getBlockX()-1,blockVector.getBlockY()+1,blockVector.getBlockZ()-1);
-			Location maxLoc = new Location(world, blockVector.getBlockX()-1+clipBoard.getWidth(),blockVector.getBlockY()+clipBoard.getHeight(),blockVector.getBlockZ()-1 + clipBoard.getLength());
-			BuildingBuiltEvent builtEvent = new BuildingBuiltEvent(minLoc, maxLoc, player);
-			Bukkit.getPluginManager().callEvent(builtEvent);
-					
-				
-			this.cancel();
-		}
-		BuildBuildingHelper build = new BuildBuildingHelper();
-		build.continueBuild(player, clipBoard, blockVector, building, i, o, p);
 
 	}
-	
-	public void continueBuild(final Player playerIn, final CuboidClipboard clipBoardIn, final WorldVector blockVectorIn, final Building buildingIn, int iIn, int oIn, int pIn){
-		
-		player = playerIn;
-		clipBoard = clipBoardIn;
-		blockVector = blockVectorIn;
-		building = buildingIn;
-		buildSpeed = building.getBuildSpeed();
-		
-		i=iIn;
-		o=oIn;
-		p=pIn;
-		
-		this.runTaskLater(AoE.instance, building.getBuildSpeed());
-		
-	}
-	
 
 }

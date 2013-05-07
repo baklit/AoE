@@ -1,0 +1,18 @@
+messages:
+  disabled: Age of Empires has been disabled.
+  enabled: Age of Empires has been enabled.
+  missing-schematic: severeFailed to locate schematic <schematic>. Try server restart (/reload will not suffice).
+  fail-to-make-output-file: severeFailed to create output file for <schematic>.
+  fail-to-find-output-file: severeFailed to locate output file location for <schematic>.
+  fail-to-write-schematic: severeFailed to write schematic <schematic>.
+  fail-to-close-input-stream: severeFailed to close input stream for <schematic>.
+  fail-to-close-output-stream: severeFailed to close output stream for <schematic>.
+  villager-attached: <name> has been assigned BasicVillagerTrait!
+  
+  player:
+    fail-to-load-schematic: \u00A74Sorry but an error occurred trying to load that building, please try that action again.
+    not-a-building: \u00A7rThat is not a building try again
+    select-a-building: \u00A7rPlease select a building first
+    select-building: \u00A7gThis building is <percent>% built and is building at <speed>
+    building-id-and-name: \u00A7gThis is building #<id>, owned by <owner>
+    building-distance: \u00A7gYou are <distance> blocks away
